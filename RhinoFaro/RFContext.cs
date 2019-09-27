@@ -150,6 +150,7 @@ namespace RhinoFaro
 
             });
 
+            Rhino.RhinoApp.WriteLine("RF v1.0");
             Rhino.RhinoApp.WriteLine("Farhino: Loading " + path + " asynchronously. Keep working, it will appear soon.");
             return true;
         }
