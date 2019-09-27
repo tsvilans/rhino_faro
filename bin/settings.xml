@@ -1,0 +1,11 @@
+<rhino_faro>
+	<scanner_transform>
+		<loc>0 0 0</loc>
+		<rot>0 0 0 1</rot>
+	</scanner_transform>
+	<clipping>
+		<clip>0</clip>
+		<min>-975 -1610 240</min>
+		<max>1185 -730 960</max>
+	</clipping>
+</rhino_faro>

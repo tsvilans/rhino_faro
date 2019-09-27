@@ -54,7 +54,7 @@
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="RhinoCommon">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>C:\Program Files\Rhinoceros 5.0 (64-bit)\System\rhinocommon.dll</HintPath>
+      <HintPath>..\..\..\Program Files\Rhino 6\System\RhinoCommon.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="System.Xml" />
@@ -62,6 +62,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Commands\RFBakeCloud.cs" />
+    <Compile Include="Commands\RFAbort.cs" />
     <Compile Include="Commands\RFClearCloud.cs" />
     <Compile Include="Commands\RFLoadCloud.cs" />
     <Compile Include="Commands\RFLoadSettings.cs" />
