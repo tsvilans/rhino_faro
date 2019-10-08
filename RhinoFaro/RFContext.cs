@@ -55,6 +55,8 @@ namespace RhinoFaro
                     Workspace.Initialize();
                     Rhino.RhinoApp.WriteLine("FaroScan: Initialized. Loading scan...");
 
+                    Workspace.ReflectionMode(2);
+
 
                     FNResult res = Workspace.Load(path);
                     if (res != FNResult.Success)
@@ -76,8 +78,6 @@ namespace RhinoFaro
                     Point3d[] points = new Point3d[N];
                     Color[] colors = new Color[N];
 
-                    Workspace.ReflectionMode(2);
-
                     double factor = RhinoMath.UnitScale(UnitSystem.Meters, RhinoDoc.ActiveDoc.ModelUnitSystem);
 
                     for (int i = 0; i < N; ++i)
@@ -93,7 +93,7 @@ namespace RhinoFaro
 
                         points[i] = new Point3d(points_raw[i * 3] * factor, points_raw[i * 3 + 1] * factor, points_raw[i * 3 + 2] * factor);
 
-                        colors[i] = Color.FromArgb(color_raw[i] << 8);
+                        colors[i] = Color.FromArgb(color_raw[i]);
                     }
 
                     temp = new PointCloud(points);
@@ -120,6 +120,7 @@ namespace RhinoFaro
 
                 if (Clip)
                 {
+                    Rhino.RhinoApp.WriteLine("Using clipping box.");
                     List<int> indices = new List<int>();
                     for (int i = 0; i < temp.Count; ++i)
                     {
@@ -153,7 +154,6 @@ namespace RhinoFaro
 
             });
 
-            Rhino.RhinoApp.WriteLine("RF v1.0");
             Rhino.RhinoApp.WriteLine("Farhino: Loading " + path + " asynchronously. Keep working, it will appear soon.");
             return true;
         }
