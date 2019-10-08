@@ -52,11 +52,11 @@ namespace RhinoFaro
                 PointCloud temp = null;
                 if (path.EndsWith("fls"))
                 {
-                    FaroScan.Initialize();
+                    Workspace.Initialize();
                     Rhino.RhinoApp.WriteLine("FaroScan: Initialized. Loading scan...");
 
 
-                    FNResult res = FaroScan.Load(path);
+                    FNResult res = Workspace.Load(path);
                     if (res != FNResult.Success)
                     {
                         Rhino.RhinoApp.WriteLine("FaroScan: Failed to load scan: " + res.ToString());
@@ -66,15 +66,17 @@ namespace RhinoFaro
                     double[] points_raw;
                     int[] color_raw;
 
-                    FaroScan.GetXYZPoints(0, out points_raw, out color_raw, step);
-                    FaroScan.Unload(0);
-                    FaroScan.Uninitialize();
+                    Workspace.GetXYZPoints(0, out points_raw, out color_raw, step);
+                    Workspace.Unload(0);
+                    Workspace.Uninitialize();
 
                     Rhino.RhinoApp.WriteLine("FaroScan: Faro done.");
 
                     int N = points_raw.Length / 3;
                     Point3d[] points = new Point3d[N];
                     Color[] colors = new Color[N];
+
+                    Workspace.ReflectionMode(2);
 
                     double factor = RhinoMath.UnitScale(UnitSystem.Meters, RhinoDoc.ActiveDoc.ModelUnitSystem);
 
@@ -90,7 +92,8 @@ namespace RhinoFaro
                             RhinoApp.WriteLine("Still working: {0}", N);
 
                         points[i] = new Point3d(points_raw[i * 3] * factor, points_raw[i * 3 + 1] * factor, points_raw[i * 3 + 2] * factor);
-                        colors[i] = Color.FromArgb(color_raw[i], color_raw[i], color_raw[i]);
+
+                        colors[i] = Color.FromArgb(color_raw[i] << 8);
                     }
 
                     temp = new PointCloud(points);
