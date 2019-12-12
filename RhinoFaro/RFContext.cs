@@ -42,6 +42,18 @@ namespace RhinoFaro
             e.IncludeBoundingBox(bb);
         }
 
+        internal static bool ListAllAttributes()
+        {
+            Rhino.RhinoApp.WriteLine(string.Format("{0} : {1}", "Test", Workspace.GetAttribute("dummy")));
+            return true;
+            foreach (var attrName in Workspace.attribute_names)
+            {
+                Rhino.RhinoApp.WriteLine(string.Format("{0} : {1}", attrName, Workspace.GetAttribute(attrName)));
+            }
+
+            return true;
+        }
+
         internal static bool LoadScan(string path, int step)
         {
             LoadSettings();
@@ -69,6 +81,16 @@ namespace RhinoFaro
                     int[] color_raw;
 
                     Workspace.GetXYZPoints(0, out points_raw, out color_raw, step);
+
+                    foreach (var attrName in Workspace.attribute_names)
+                    {
+                        Rhino.RhinoApp.WriteLine(string.Format("{0} : {1}", attrName, Workspace.GetAttribute(attrName)));
+                    }
+
+                    var children = Workspace.GetChildren();
+                    foreach (string str in children)
+                        RhinoApp.WriteLine(str);
+
                     Workspace.Unload(0);
                     Workspace.Uninitialize();
 
