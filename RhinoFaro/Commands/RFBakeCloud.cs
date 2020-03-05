@@ -26,7 +26,39 @@ namespace RhinoFaro
 
         protected override Result RunCommand(RhinoDoc doc, RunMode mode)
         {
-            doc.Objects.AddPointCloud(RFContext.Cloud);
+            if (RFContext.Clip)
+            {
+                int N = RFContext.Cloud.Count;
+                bool[] included = new bool[N];
+
+                for (int i = 0; i < N; ++i)
+                {
+                    if (RFContext.ClippingBox.Contains(RFContext.Cloud[i].Location))
+                    {
+                        included[i] = true;
+                    }
+                }
+
+
+                PointCloud pc = new PointCloud();
+
+                for (int i = 0; i < N; ++i)
+                {
+                    if (included[i])
+                    {
+                        pc.Add(
+                            RFContext.Cloud[i].Location,
+                            RFContext.Cloud[i].Normal,
+                            RFContext.Cloud[i].Color);
+                    }
+                }
+
+                doc.Objects.AddPointCloud(pc);
+
+            }
+            else
+                doc.Objects.AddPointCloud(RFContext.Cloud);
+
             Polyline poly = new Polyline(new Point3d[] {
                 new Point3d(0, 0, 0), new Point3d(120, 0, 0),
                 new Point3d(0, 100, 0), new Point3d(0, 0, 0) });

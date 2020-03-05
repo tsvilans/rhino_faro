@@ -1,21 +1,20 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.28307.572
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.29609.76
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RhinoFaro", "RhinoFaro\RhinoFaro.csproj", "{16E3AEFE-9554-47EC-AC87-D7D43FD5DB24}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
-		Debug32|Any CPU = Debug32|Any CPU
-		Debug64|Any CPU = Debug64|Any CPU
-		Release|Any CPU = Release|Any CPU
+		Debug|x64 = Debug|x64
+		Release|x64 = Release|x64
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{16E3AEFE-9554-47EC-AC87-D7D43FD5DB24}.Debug32|Any CPU.ActiveCfg = Debug32|x64
-		{16E3AEFE-9554-47EC-AC87-D7D43FD5DB24}.Debug64|Any CPU.ActiveCfg = Debug64|x64
-		{16E3AEFE-9554-47EC-AC87-D7D43FD5DB24}.Release|Any CPU.ActiveCfg = Release|x64
-		{16E3AEFE-9554-47EC-AC87-D7D43FD5DB24}.Release|Any CPU.Build.0 = Release|x64
+		{16E3AEFE-9554-47EC-AC87-D7D43FD5DB24}.Debug|x64.ActiveCfg = Debug|x64
+		{16E3AEFE-9554-47EC-AC87-D7D43FD5DB24}.Debug|x64.Build.0 = Debug|x64
+		{16E3AEFE-9554-47EC-AC87-D7D43FD5DB24}.Release|x64.ActiveCfg = Release|x64
+		{16E3AEFE-9554-47EC-AC87-D7D43FD5DB24}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

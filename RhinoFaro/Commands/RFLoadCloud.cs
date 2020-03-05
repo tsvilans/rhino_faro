@@ -2,8 +2,6 @@
 using Rhino;
 using Rhino.Commands;
 
-using FaroNET;
-
 namespace RhinoFaro
 {
     [System.Runtime.InteropServices.Guid("24deffa1-641a-45f7-a1ec-c72b3b157b2b")]

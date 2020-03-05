@@ -14,8 +14,7 @@ namespace RhinoFaro
 {
     public class RFPlugIn : Rhino.PlugIns.PlugIn
 
-    {
-
+    { 
         internal RFContext rf;
 
         public RFPlugIn()
@@ -31,7 +30,6 @@ namespace RhinoFaro
 
         protected override LoadReturnCode OnLoad(ref string errorMessage)
         {
-
             return base.OnLoad(ref errorMessage);
         }
 

@@ -1,4 +1,5 @@
 ﻿using FaroNET;
+
 using Rhino;
 using Rhino.Geometry;
 using System;
@@ -17,6 +18,7 @@ namespace RhinoFaro
         internal static Box ClippingBox;
         internal static bool Clip = false;
         internal static Transform Xform;
+        internal static double PointSize = 1.0;
 
         internal static bool Abort = false;
 
@@ -29,11 +31,53 @@ namespace RhinoFaro
             Rhino.Display.DisplayPipeline.CalculateBoundingBox += DisplayPipeline_CloudBoundingBox;
 
             LoadSettings();
+
+            Clip = false;
         }
 
         private static void DisplayPipeline_DrawPointcloud(object sender, Rhino.Display.DrawEventArgs e)
         {
-            e.Display.DrawPointCloud(Cloud, 1);
+            if (ClippingBox.IsValid && Clip)
+            {
+                Point3d max = new Point3d(
+                        ClippingBox.X.Max,
+                        ClippingBox.Y.Max,
+                        ClippingBox.Z.Max
+                        );
+
+                Point3d min = new Point3d(
+                        ClippingBox.X.Min,
+                        ClippingBox.Y.Min,
+                        ClippingBox.Z.Min
+                        );
+
+                int[] clips = new int[6];
+
+                clips[0] = e.Display.AddClippingPlane(max, -Vector3d.XAxis);
+                clips[1] = e.Display.AddClippingPlane(min, Vector3d.XAxis);
+
+                clips[2] = e.Display.AddClippingPlane(max, -Vector3d.YAxis);
+                clips[3] = e.Display.AddClippingPlane(min, Vector3d.YAxis);
+
+                clips[4] = e.Display.AddClippingPlane(max, -Vector3d.ZAxis);
+                clips[5] = e.Display.AddClippingPlane(min, Vector3d.ZAxis);
+
+
+                e.Display.EnableClippingPlanes(true);
+
+                e.Display.ZBiasMode = Rhino.Display.ZBiasMode.TowardsCamera;
+
+                e.Display.DrawPointCloud(Cloud, (float)PointSize);
+
+                e.Display.EnableClippingPlanes(false);
+
+                for (int i = 0; i < 6; ++i)
+                    e.Display.RemoveClippingPlane(clips[i]);
+            }
+            else
+                e.Display.DrawPointCloud(Cloud, 1);
+
+
         }
 
         private static void DisplayPipeline_CloudBoundingBox(object sender, Rhino.Display.CalculateBoundingBoxEventArgs e)
@@ -238,18 +282,49 @@ namespace RhinoFaro
 
         internal static void SaveSettings()
         {
+            Plane p = Plane.WorldXY;
+            p.Transform(Xform);
+            Quaternion quat = Quaternion.Rotation(Plane.WorldXY, p);
+
+
+            RFPlugIn.Instance.Settings.SetPoint3d("xform_origin", p.Origin);
+
+            RFPlugIn.Instance.Settings.SetDouble("quat_a", quat.A);
+            RFPlugIn.Instance.Settings.SetDouble("quat_b", quat.B);
+            RFPlugIn.Instance.Settings.SetDouble("quat_c", quat.C);
+            RFPlugIn.Instance.Settings.SetDouble("quat_d", quat.D);
+
+            RFPlugIn.Instance.Settings.SetBool("clip", Clip);
+
+            Point3d min = new Point3d(
+                ClippingBox.X.Min,
+                ClippingBox.Y.Min,
+                ClippingBox.Z.Min
+             );
+
+            Point3d max = new Point3d(
+                ClippingBox.X.Max,
+                ClippingBox.Y.Max,
+                ClippingBox.Z.Max
+            );
+
+            RFPlugIn.Instance.Settings.SetPoint3d("clip_min", min);
+            RFPlugIn.Instance.Settings.SetPoint3d("clip_max", max);
+
+            RFPlugIn.Instance.SaveSettings();
+
+            return;
             System.Threading.Thread.CurrentThread.CurrentCulture = System.Globalization.CultureInfo.InvariantCulture;
             string settings_path = System.IO.Path.Combine(System.IO.Path.GetDirectoryName(
                 System.Reflection.Assembly.GetExecutingAssembly().Location), "settings.xml");
             RhinoApp.WriteLine(settings_path);
 
+
             var root = new XElement("rhino_faro");
 
             var xform_elem = new XElement("scanner_transform");
 
-            Plane p = Plane.WorldXY;
-            p.Transform(Xform);
-            Quaternion quat = Quaternion.Rotation(Plane.WorldXY, p);
+
 
             var loc_elem = new XElement("loc");
             loc_elem.Value = string.Format("{0} {1} {2}", p.Origin.X, p.Origin.Y, p.Origin.Z);
@@ -284,6 +359,36 @@ namespace RhinoFaro
 
         internal static void LoadSettings()
         {
+            Plane p = Plane.WorldXY;
+            p.Transform(Xform);
+
+            Quaternion quat = new Quaternion(
+                RFPlugIn.Instance.Settings.GetDouble("quat_a", 1.0),
+                RFPlugIn.Instance.Settings.GetDouble("quat_b", 0.0),
+                RFPlugIn.Instance.Settings.GetDouble("quat_c", 0.0),
+                RFPlugIn.Instance.Settings.GetDouble("quat_d", 0.0)
+                );
+
+            Point3d origin = RFPlugIn.Instance.Settings.GetPoint3d("xform_origin", Point3d.Origin);
+
+            if (quat.IsValid)
+                quat.GetRotation(out p);
+
+            p.Origin = origin;
+
+            Xform = Transform.PlaneToPlane(Plane.WorldXY, p);
+
+            Clip = RFPlugIn.Instance.Settings.GetBool("clip", false);
+
+            Point3d min = RFPlugIn.Instance.Settings.GetPoint3d("clip_min", Point3d.Origin);
+            Point3d max = RFPlugIn.Instance.Settings.GetPoint3d("clip_max", Point3d.Origin);
+
+            ClippingBox = new Box(Plane.WorldXY, new Point3d[] { min, max });
+
+            return;
+        }
+
+            /*
             System.Threading.Thread.CurrentThread.CurrentCulture = System.Globalization.CultureInfo.InvariantCulture;
             string settings_path = System.IO.Path.Combine(System.IO.Path.GetDirectoryName(
                 System.Reflection.Assembly.GetExecutingAssembly().Location), "settings.xml");
@@ -346,6 +451,7 @@ namespace RhinoFaro
 
         }
 
+        
         internal static Quaternion StringToQuaternion(string s)
         {
             string[] bits = s.Split();
@@ -371,5 +477,6 @@ namespace RhinoFaro
 
             return new Point3d(x, y, z);
         }
+         */
     }
 }
